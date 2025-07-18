@@ -7,6 +7,7 @@ import 'app/routes/app_routes.dart';
 import 'modules/auth/viewmodel/login/login_bloc.dart';
 import 'modules/auth/auth_repository.dart';
 import 'modules/auth/viewmodel/register/register_bloc.dart';
+import 'shared/themes/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,10 +35,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Insurance App',
-        theme: ThemeData(
-          useMaterial3: true,
-          primarySwatch: Colors.blue,
-        ),
+        theme: AppTheme.darkTheme,
         initialRoute: AppRoutes.home,
         routes: AppRoutes.routes,
         debugShowCheckedModeBanner: false,
