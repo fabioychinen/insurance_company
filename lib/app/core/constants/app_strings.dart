@@ -21,4 +21,15 @@ class AppStrings {
   static const registerButton = "Cadastrar";
   static const registerSuccess = "Cadastro realizado com sucesso!";
   static const registerPasswordsNotMatch = "As senhas não coincidem";
+
+  static const loginTitle = "Login";
+  static const loginCpf = "CPF";
+  static const loginPassword = "Senha";
+  static const loginRememberMe = "Lembrar sempre";
+  static const loginForgotPassword = "Esqueceu a senha?";
+  static const loginButton = "Entrar";
+  static const loginRegister = "Cadastrar";
+  static const loginFacebook = "Facebook";
+  static const loginGoogle = "Google";
+  static const loginApple = "Apple";
 }

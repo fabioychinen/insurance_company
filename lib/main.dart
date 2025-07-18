@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           primarySwatch: Colors.blue,
         ),
-        initialRoute: AppRoutes.login,
+        initialRoute: AppRoutes.home,
         routes: AppRoutes.routes,
         debugShowCheckedModeBanner: false,
       ),
