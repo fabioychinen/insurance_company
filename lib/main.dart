@@ -4,8 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'app/core/firebase_options.dart';
 import 'app/routes/app_routes.dart';
-import 'modules/auth/viewmodel/login_bloc.dart';
+import 'modules/auth/viewmodel/login/login_bloc.dart';
 import 'modules/auth/auth_repository.dart';
+import 'modules/auth/viewmodel/register/register_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +27,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<LoginBloc>(
           create: (_) => LoginBloc(AuthRepository()),
+        ),
+        BlocProvider<RegisterBloc>(
+          create: (_) => RegisterBloc(AuthRepository()),
         ),
       ],
       child: MaterialApp(
