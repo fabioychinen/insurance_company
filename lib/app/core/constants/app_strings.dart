@@ -34,4 +34,18 @@ class AppStrings {
   static const loginFacebook = "Facebook";
   static const loginGoogle = "Google";
   static const loginApple = "Apple";
+
+  static const drawerUserName = "Usuário Exemplo";
+  static const drawerUserEmail = "exemplo@email.com";
+  static const drawerHome = "Home / Seguros";
+  static const drawerContracts = "Minhas Contratações";
+  static const drawerClaims = "Meus Sinistros";
+  static const drawerFamily = "Minha Família";
+  static const drawerAssets = "Meus Bens";
+  static const drawerPayments = "Pagamentos";
+  static const drawerCoverage = "Coberturas";
+  static const drawerValidateInvoice = "Validar Boleto";
+  static const drawerImportantPhones = "Telefones Importantes";
+  static const drawerSettings = "Configurações";
+  static const drawerLogout = "Sair";
 }

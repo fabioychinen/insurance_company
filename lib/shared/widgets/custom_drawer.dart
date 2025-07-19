@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import '../../../app/core/constants/app_strings.dart';
+import '../../app/routes/app_routes.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final userName = "Usuário Exemplo";
-    final userEmail = "exemplo@email.com";
+    final userName = AppStrings.drawerUserName;
+    final userEmail = AppStrings.drawerUserEmail;
 
     return Drawer(
       child: ListView(
@@ -19,20 +21,20 @@ class CustomDrawer extends StatelessWidget {
               child: Icon(Icons.person, size: 40),
             ),
           ),
-          _buildDrawerItem(context, Icons.home, "Home / Seguros", "/home"),
-          _buildDrawerItem(context, Icons.assignment, "Minhas Contratações", "/contratacoes"),
-          _buildDrawerItem(context, Icons.car_crash, "Meus Sinistros", "/sinistros"),
-          _buildDrawerItem(context, Icons.family_restroom, "Minha Família", "/familia"),
-          _buildDrawerItem(context, Icons.home_work, "Meus Bens", "/bens"),
-          _buildDrawerItem(context, Icons.payment, "Pagamentos", "/pagamentos"),
-          _buildDrawerItem(context, Icons.verified_user, "Coberturas", "/coberturas"),
-          _buildDrawerItem(context, Icons.qr_code, "Validar Boleto", "/boleto"),
-          _buildDrawerItem(context, Icons.phone, "Telefones Importantes", "/telefones"),
-          _buildDrawerItem(context, Icons.settings, "Configurações", "/configuracoes"),
+          _buildDrawerItem(context, Icons.home, AppStrings.drawerHome, AppRoutes.home),
+          _buildDrawerItem(context, Icons.assignment, AppStrings.drawerContracts, AppRoutes.contracts),
+          _buildDrawerItem(context, Icons.car_crash, AppStrings.drawerClaims, AppRoutes.claims),
+          _buildDrawerItem(context, Icons.family_restroom, AppStrings.drawerFamily, AppRoutes.family),
+          _buildDrawerItem(context, Icons.home_work, AppStrings.drawerAssets, AppRoutes.assets),
+          _buildDrawerItem(context, Icons.payment, AppStrings.drawerPayments, AppRoutes.payments),
+          _buildDrawerItem(context, Icons.verified_user, AppStrings.drawerCoverage, AppRoutes.coverage),
+          _buildDrawerItem(context, Icons.qr_code, AppStrings.drawerValidateInvoice, AppRoutes.validateInvoice),
+          _buildDrawerItem(context, Icons.phone, AppStrings.drawerImportantPhones, AppRoutes.importantPhones),
+          _buildDrawerItem(context, Icons.settings, AppStrings.drawerSettings, AppRoutes.settings),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.exit_to_app),
-            title: const Text("Sair"),
+            title: const Text(AppStrings.drawerLogout),
             onTap: () {
               Navigator.of(context).popUntil((route) => route.isFirst);
             },
@@ -48,6 +50,7 @@ class CustomDrawer extends StatelessWidget {
       title: Text(title),
       onTap: () {
         Navigator.of(context).pop();
+        Navigator.of(context).pushNamed(route);
       },
     );
   }
