@@ -1,25 +1,35 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../app/core/services/firebase_repository_impl.dart';
 import 'login_event.dart';
 import 'login_state.dart';
-import '../../auth_repository.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  final AuthRepository authRepository;
+  final FirebaseRepositoryImpl repository; 
 
-  LoginBloc(this.authRepository) : super(LoginInitial()) {
+  LoginBloc(this.repository) : super(LoginInitial()) {
     on<LoginSubmitted>(_onLoginSubmitted);
   }
 
   Future<void> _onLoginSubmitted(
-    LoginSubmitted event,
-    Emitter<LoginState> emit,
-  ) async {
+      LoginSubmitted event, Emitter<LoginState> emit) async {
     emit(LoginLoading());
     try {
-      await authRepository.login(event.cpf, event.password);
+      final userEmail = await repository.getEmailByCpf(event.cpf);
+
+      if (userEmail == null) {
+        emit(LoginFailure("CPF não cadastrado!", error: ''));
+        return;
+      }
+
+
+      await repository.loginWithEmail(
+        email: userEmail,
+        password: event.password,
+      );
+
       emit(LoginSuccess());
     } catch (e) {
-      emit(LoginFailure(error: e.toString()));
+      emit(LoginFailure("CPF ou senha inválidos", error: ''));
     }
   }
 }

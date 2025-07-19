@@ -1,12 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../auth_repository.dart';
+import 'package:insurance_company/app/core/services/firebase_repository_impl.dart';
 import 'register_event.dart';
 import 'register_state.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
-  final AuthRepository authRepository;
+  final FirebaseRepositoryImpl repository;
 
-  RegisterBloc(this.authRepository) : super(RegisterInitial()) {
+  RegisterBloc(this.repository) : super(RegisterInitial()) {
     on<RegisterSubmitted>(_onRegisterSubmitted);
   }
 
@@ -16,7 +16,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   ) async {
     emit(RegisterLoading());
     try {
-      await authRepository.register(
+      await repository.registerWithEmail(
         name: event.name,
         cpf: event.cpf,
         email: event.email,

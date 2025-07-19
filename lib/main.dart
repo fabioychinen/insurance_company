@@ -3,9 +3,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'app/core/firebase_options.dart';
+import 'app/core/services/firebase_repository_impl.dart';
 import 'app/routes/app_routes.dart';
 import 'modules/auth/viewmodel/login/login_bloc.dart';
-import 'modules/auth/auth_repository.dart';
 import 'modules/auth/viewmodel/register/register_bloc.dart';
 import 'shared/themes/app_theme.dart';
 
@@ -27,16 +27,16 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LoginBloc>(
-          create: (_) => LoginBloc(AuthRepository()),
+          create: (_) => LoginBloc(FirebaseRepositoryImpl()),
         ),
         BlocProvider<RegisterBloc>(
-          create: (_) => RegisterBloc(AuthRepository()),
+          create: (_) => RegisterBloc(FirebaseRepositoryImpl()),
         ),
       ],
       child: MaterialApp(
         title: 'Insurance App',
         theme: AppTheme.darkTheme,
-        initialRoute: AppRoutes.home,
+        initialRoute: AppRoutes.login,
         routes: AppRoutes.routes,
         debugShowCheckedModeBanner: false,
       ),
