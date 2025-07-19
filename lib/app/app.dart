@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../modules/auth/viewmodel/login/login_bloc.dart';
-import '../modules/auth/viewmodel/register/register_bloc.dart';
-import '../shared/themes/app_theme.dart';
 import 'core/services/firebase_repository_impl.dart';
 import 'routes/app_routes.dart';
+import 'core/constants/app_strings.dart';
+import '../shared/themes/app_theme.dart';
+import '../modules/auth/viewmodel/login/login_bloc.dart';
+import '../modules/auth/viewmodel/register/register_bloc.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'Insurance App',
+        title: AppStrings.appTitle,
         theme: AppTheme.darkTheme,
         initialRoute: AppRoutes.login,
         routes: AppRoutes.routes,

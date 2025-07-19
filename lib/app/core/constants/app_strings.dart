@@ -1,4 +1,6 @@
 class AppStrings {
+  static const appTitle = 'Insurance App';
+  
   static const greeting = "Olá";
   static const quoteAndHire = "Cotar e Contratar";
   static const car = "Automóvel";
