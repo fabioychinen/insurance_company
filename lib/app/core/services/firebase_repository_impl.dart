@@ -28,7 +28,11 @@ class FirebaseRepositoryImpl implements IFirebaseRepository {
       email: email,
       password: password,
     );
+    
+    final uid = userCredential.user!.uid;
+
     await _firestore.collection('users').doc(userCredential.user!.uid).set({
+      'uid': uid,
       'name': name,
       'cpf': cpf,
       'email': email,
@@ -75,5 +79,11 @@ class FirebaseRepositoryImpl implements IFirebaseRepository {
   @override
   Future<QuerySnapshot<Map<String, dynamic>>> getFamilyMembers(String uid) async {
     return await _firestore.collection('users').doc(uid).collection('family').get();
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getCurrentUserData() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) throw Exception("Usuário não logado");
+    return await _firestore.collection('users').doc(uid).get();
   }
 }

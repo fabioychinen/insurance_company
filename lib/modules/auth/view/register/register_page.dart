@@ -24,12 +24,23 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text(AppStrings.registerTitle)),
-      body: BlocConsumer<RegisterBloc, RegisterState>(
-        listener: _registerListener,
-        builder: (context, state) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: _buildRegisterForm(context, state),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isWide = constraints.maxWidth > 900;
+          final isTablet = constraints.maxWidth > 700 && constraints.maxWidth <= 900;
+          final maxWidth = isWide ? 500 : isTablet ? 400 : double.infinity;
+          final scale = isWide ? 1.3 : isTablet ? 1.15 : 1.0;
+
+          return Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: maxWidth.toDouble()),
+                  child: _buildRegisterForm(context, scale),
+                ),
+              ),
+            ),
           );
         },
       ),
@@ -49,51 +60,61 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  Widget _buildRegisterForm(BuildContext context, RegisterState state) {
-    return Column(
-      children: [
-        CustomTextField(
-          controller: nameController,
-          label: AppStrings.registerName,
-        ),
-        const SizedBox(height: 16),
-        CustomTextField(
-          controller: cpfController,
-          label: AppStrings.registerCpf,
-          keyboardType: TextInputType.number,
-        ),
-        const SizedBox(height: 16),
-        CustomTextField(
-          controller: emailController,
-          label: AppStrings.registerEmail,
-          keyboardType: TextInputType.emailAddress,
-        ),
-        const SizedBox(height: 16),
-        CustomTextField(
-          controller: passwordController,
-          label: AppStrings.registerPassword,
-          obscureText: true,
-        ),
-        const SizedBox(height: 16),
-        CustomTextField(
-          controller: confirmPasswordController,
-          label: AppStrings.registerConfirmPassword,
-          obscureText: true,
-        ),
-        const SizedBox(height: 24),
-        _buildRegisterButton(context, state),
-      ],
+  Widget _buildRegisterForm(BuildContext context, double scale) {
+    return BlocConsumer<RegisterBloc, RegisterState>(
+      listener: _registerListener,
+      builder: (context, state) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            AppStrings.registerTitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 26 * scale, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 32 * scale),
+          CustomTextField(
+            controller: nameController,
+            label: AppStrings.registerName,
+          ),
+          SizedBox(height: 16 * scale),
+          CustomTextField(
+            controller: cpfController,
+            label: AppStrings.registerCpf,
+            keyboardType: TextInputType.number,
+          ),
+          SizedBox(height: 16 * scale),
+          CustomTextField(
+            controller: emailController,
+            label: AppStrings.registerEmail,
+            keyboardType: TextInputType.emailAddress,
+          ),
+          SizedBox(height: 16 * scale),
+          CustomTextField(
+            controller: passwordController,
+            label: AppStrings.registerPassword,
+            obscureText: true,
+          ),
+          SizedBox(height: 16 * scale),
+          CustomTextField(
+            controller: confirmPasswordController,
+            label: AppStrings.registerConfirmPassword,
+            obscureText: true,
+          ),
+          SizedBox(height: 24 * scale),
+          _buildRegisterButton(context, state, scale),
+        ],
+      ),
     );
   }
 
-  Widget _buildRegisterButton(BuildContext context, RegisterState state) {
+  Widget _buildRegisterButton(BuildContext context, RegisterState state, double scale) {
     return ElevatedButton(
       onPressed: state is RegisterLoading
-        ? null
-        : () => _onRegisterPressed(context),
+          ? null
+          : () => _onRegisterPressed(context),
       child: state is RegisterLoading
-        ? const CircularProgressIndicator()
-        : const Text(AppStrings.registerButton),
+          ? const CircularProgressIndicator()
+          : Text(AppStrings.registerButton, style: TextStyle(fontSize: 16 * scale)),
     );
   }
 

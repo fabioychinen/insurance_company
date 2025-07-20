@@ -1,10 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'home_event.dart';
 import 'home_state.dart';
+import '../../../app/core/services/firebase_repository_impl.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
+  final FirebaseRepositoryImpl repository;
 
-  HomeBloc() : super(const HomeState(isLoading: false)) {
+  HomeBloc(this.repository) : super(const HomeState(isLoading: false)) {
     on<LoadHomeData>(_onLoadHomeData);
   }
 
@@ -12,15 +14,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(state.copyWith(isLoading: true, error: null));
 
     try {
-      final userName = "Usuário Exemplo";
+      final user = repository.currentUser;
+      if (user == null) throw Exception("Usuário não autenticado!");
+
+      final userDoc = await repository.getUserData(user.uid);
+      final userData = userDoc.data();
+      final userName = userData?['name'] ?? '';
+      final userEmail = userData?['email'] ?? '';
+
       final family = <String>[];
       final contracted = <String>[];
-
-      await Future.delayed(const Duration(milliseconds: 500));
 
       emit(state.copyWith(
         isLoading: false,
         userName: userName,
+        userEmail: userEmail,
         familyMembers: family,
         contractedInsurances: contracted,
       ));
