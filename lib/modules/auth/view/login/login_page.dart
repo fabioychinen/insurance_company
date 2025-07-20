@@ -38,15 +38,31 @@ class _LoginPageState extends State<LoginPage> {
       final prefs = await SharedPreferences.getInstance();
       final savedCpf = prefs.getString('savedCpf');
       final savedPassword = prefs.getString('savedPassword');
-      if (savedCpf != null && savedCpf.isNotEmpty && savedPassword != null && savedPassword.isNotEmpty) {
+      
+      if (!mounted) return;
+      
+      if (savedCpf != null && savedCpf.isNotEmpty && 
+          savedPassword != null && savedPassword.isNotEmpty) {
         setState(() {
           cpfController.text = savedCpf;
           passwordController.text = savedPassword;
           rememberMe = true;
         });
+        
+        if (mounted) {
+          context.read<LoginBloc>().add(LoginSubmitted(
+            cpf: savedCpf,
+            password: savedPassword,
+          ));
+        }
       }
     } catch (e) {
       debugPrint('Erro ao carregar preferências: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao carregar dados salvos: $e')),
+        );
+      }
     }
   }
 
