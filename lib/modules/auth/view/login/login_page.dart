@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insurance_company/shared/themes/app_theme.dart';
 import '../../../../app/core/constants/app_strings.dart';
 import '../../../../app/core/services/firebase_repository_impl.dart';
-import '../../../../shared/widgets/custom_text_field.dart';
+import '../../../../shared/widgets/custom_login_text_field.dart';
 import '../../../../shared/widgets/gradient_background.dart';
 import '../../../home/view/home_page.dart';
 import '../../../home/viewmodel/home_bloc.dart';
@@ -32,16 +32,16 @@ class _LoginPageState extends State<LoginPage> {
         header: Column(
           children: [
             Text(
-              AppStrings.greeting,
+              AppStrings.appTitle,
               style: const TextStyle(
                 fontSize: 22,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Text(
-              AppStrings.loginRegister,
+              AppStrings.welcome,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Colors.white70,
@@ -99,21 +99,57 @@ class _LoginPageState extends State<LoginPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildTitle(scale),
-          SizedBox(height: 24 * scale),
-          CustomTextField(
+          SizedBox(height: 16 * scale),
+          CustomLoginTextField(
             controller: cpfController,
             label: AppStrings.loginCpf,
+            textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: AppStrings.loginCpf,
+              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+              floatingLabelAlignment: FloatingLabelAlignment.center,
+              alignLabelWithHint: true,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(24),
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(24),
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+            ),
           ),
           SizedBox(height: 16 * scale),
-          CustomTextField(
+          CustomLoginTextField(
             controller: passwordController,
             label: AppStrings.loginPassword,
+            textAlign: TextAlign.center,
             obscureText: true,
+            decoration: InputDecoration(
+              labelText: AppStrings.loginPassword,
+              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+              floatingLabelAlignment: FloatingLabelAlignment.center,
+              alignLabelWithHint: true,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(24),
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(24),
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+            ),
           ),
           SizedBox(height: 8 * scale),
           _buildRememberRow(scale),
-          SizedBox(height: 12 * scale),
+          SizedBox(height: 8 * scale),
           _buildLoginButton(context, state, scale),
           _buildRegisterButton(context, scale),
         ],
@@ -143,10 +179,14 @@ class _LoginPageState extends State<LoginPage> {
               rememberMe = value ?? false;
             });
           },
+          shape: const CircleBorder(),
+          side: const BorderSide(color: Colors.white),
+          checkColor: AppColors.primaryDark,
+          activeColor: AppColors.primaryGreen,
         ),
         Text(
           AppStrings.loginRememberMe,
-          style: TextStyle(fontSize: 14 * scale, color: Colors.white70),
+          style: TextStyle(fontSize: 12 * scale, color: Colors.white70),
         ),
         const Spacer(),
         TextButton(
@@ -154,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Text(
             AppStrings.loginForgotPassword,
             style: TextStyle(
-              fontSize: 14 * scale,
+              fontSize: 12 * scale,
               color: AppColors.primaryGreen,
             ),
           ),
