@@ -41,6 +41,10 @@ class FirebaseRepositoryImpl implements IFirebaseRepository {
     return userCredential;
   }
 
+  Future<void> sendPasswordResetEmail(String email) async {
+    await _auth.sendPasswordResetEmail(email: email);
+  }
+
   Future<String?> getEmailByCpf(String cpf) async {
     final result = await _firestore
         .collection('users')
@@ -83,7 +87,7 @@ class FirebaseRepositoryImpl implements IFirebaseRepository {
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getCurrentUserData() async {
     final uid = _auth.currentUser?.uid;
-    if (uid == null) throw Exception("Usuário não logado");
+    if (uid == null) throw Exception('Usuário não logado');
     return await _firestore.collection('users').doc(uid).get();
   }
 }

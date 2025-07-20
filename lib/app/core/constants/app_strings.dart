@@ -38,6 +38,18 @@ class AppStrings {
   static const loginApple = 'Apple';
   static const loginFieldsRequired = 'Por favor, preencha todos os campos.';
 
+  static const forgotPasswordTitle = 'Recuperar Senha';
+  static const forgotPasswordHeader = 'Esqueceu sua senha?';
+  static const forgotPasswordSubheader = 'Informe seu e-mail cadastrado para receber as instruções de redefinição de senha.';
+  static const forgotPasswordSendButton = 'Enviar e-mail';
+  static const forgotPasswordSending = 'Enviando...';
+  static const forgotPasswordEmailSent = 'Instruções enviadas para o seu e-mail.';
+  static const forgotPasswordSendError = 'Erro ao enviar:';
+  static const forgotPasswordEmailRequired = 'Por favor, preencha o e-mail.';
+  static const email = 'E-mail';
+
+  static const saveErrorMessage = 'Ocorreu um erro ao salvar suas preferências';
+
   static const drawerUserName = 'Usuário Exemplo';
   static const drawerUserEmail = 'exemplo@email.com';
   static const drawerHome = 'Home / Seguros';

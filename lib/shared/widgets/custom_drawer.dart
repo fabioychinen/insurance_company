@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../app/core/constants/app_strings.dart';
+import '../../app/core/services/firebase_repository_impl.dart';
 import '../../app/routes/app_routes.dart';
 import '../../modules/home/viewmodel/home_bloc.dart';
 import '../../modules/home/viewmodel/home_state.dart';
@@ -47,10 +48,13 @@ class CustomDrawer extends StatelessWidget {
               ..._drawerItems(context, iconSize, fontSize),
               const Divider(),
               ListTile(
-                leading: Icon(Icons.exit_to_app, size: iconSize),
+                // leading: Icon(Icons.exit_to_app, size: iconSize),
                 title: Text(AppStrings.drawerLogout, style: TextStyle(fontSize: fontSize)),
-                onTap: () {
+                onTap: () async {
+                  await FirebaseRepositoryImpl().logout();
+                  if (!context.mounted) return; 
                   Navigator.of(context).popUntil((route) => route.isFirst);
+                  Navigator.of(context).pushReplacementNamed(AppRoutes.login);
                 },
               ),
             ],

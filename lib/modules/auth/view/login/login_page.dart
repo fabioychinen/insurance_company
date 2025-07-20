@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:insurance_company/shared/themes/app_theme.dart';
 import '../../../../app/core/constants/app_strings.dart';
 import '../../../../app/core/services/firebase_repository_impl.dart';
@@ -11,6 +12,7 @@ import '../../../home/viewmodel/home_event.dart';
 import '../../viewmodel/login/login_bloc.dart';
 import '../../viewmodel/login/login_event.dart';
 import '../../viewmodel/login/login_state.dart';
+import '../forgot_password/forgot_password_page.dart';
 import '../register/register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -24,6 +26,29 @@ class _LoginPageState extends State<LoginPage> {
   final cpfController = TextEditingController();
   final passwordController = TextEditingController();
   bool rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedLogin();
+  }
+
+  Future<void> _loadSavedLogin() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedCpf = prefs.getString('savedCpf');
+      final savedPassword = prefs.getString('savedPassword');
+      if (savedCpf != null && savedCpf.isNotEmpty && savedPassword != null && savedPassword.isNotEmpty) {
+        setState(() {
+          cpfController.text = savedCpf;
+          passwordController.text = savedPassword;
+          rememberMe = true;
+        });
+      }
+    } catch (e) {
+      debugPrint('Erro ao carregar preferências: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +76,58 @@ class _LoginPageState extends State<LoginPage> {
           ],
         ),
         footer: _buildSocialIcons(1.0),
-        child: Material(
+        child: BlocConsumer<LoginBloc, LoginState>(
+          listener: (context, state) => _loginListener(state),
+          builder: (context, state) => _buildLoginFormCard(context, 1.0, state),
+        ),
+      ),
+    );
+  }
+
+  void _loginListener(LoginState state) async {
+    if (state is LoginSuccess) {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        if (rememberMe) {
+          await prefs.setString('savedCpf', cpfController.text.trim());
+          await prefs.setString('savedPassword', passwordController.text);
+        } else {
+          await prefs.remove('savedCpf');
+          await prefs.remove('savedPassword');
+        }
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BlocProvider<HomeBloc>(
+              create: (context) {
+                final bloc = HomeBloc(FirebaseRepositoryImpl());
+                bloc.add(LoadHomeData());
+                return bloc;
+              },
+              child: const HomePage(),
+            ),
+          ),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(AppStrings.saveErrorMessage)),
+        );
+      }
+    } else if (state is LoginFailure) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(state.error)),
+      );
+    }
+  }
+
+  Widget _buildLoginFormCard(BuildContext context, double scale, LoginState state) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Material(
           elevation: 10,
           borderRadius: BorderRadius.circular(24),
           color: AppColors.primaryDark,
@@ -62,109 +138,174 @@ class _LoginPageState extends State<LoginPage> {
               color: AppColors.primaryDark,
               borderRadius: BorderRadius.circular(24),
             ),
-            child: _buildLoginForm(context, 1.0),
+            child: _buildLoginForm(context, scale, state),
           ),
         ),
-      ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: -31,
+          child: Center(
+            child: _buildLoginFabButton(context, state, scale),
+          ),
+        ),
+      ],
     );
   }
 
-  void _loginListener(BuildContext context, LoginState state) {
-    if (state is LoginSuccess) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => BlocProvider<HomeBloc>(
-            create: (context) {
-              final bloc = HomeBloc(FirebaseRepositoryImpl());
-              bloc.add(LoadHomeData());
-              return bloc;
+Widget _buildLoginFabButton(BuildContext context, LoginState state, double scale) {
+  return Material(
+    elevation: 6,
+    shape: const CircleBorder(),
+    color: Colors.transparent,
+    child: InkWell(
+      customBorder: const CircleBorder(),
+      onTap: state is LoginLoading
+          ? null
+          : () async {
+              if (!mounted) return;
+              final cpf = cpfController.text.trim();
+              final password = passwordController.text;
+              
+              if (cpf.isEmpty || password.isEmpty) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Preencha todos os campos')),
+                );
+                return;
+              }
+              
+              try {
+                context.read<LoginBloc>().add(LoginSubmitted(
+                  cpf: cpf,
+                  password: password,
+                ));
+              } catch (e) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Erro: ${e.toString()}')),
+                );
+              }
             },
-            child: const HomePage(),
+      child: Container(
+        width: 62,
+        height: 62,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: const LinearGradient(
+            colors: [AppColors.primaryGreen, AppColors.primaryYellow],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.cardDark.withAlpha(2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Center(
+          child: state is LoginLoading
+              ? const CircularProgressIndicator(color: Colors.white)
+              : const Icon(Icons.arrow_forward, color: Colors.white, size: 32),
+        ),
+      ),
+    ),
+  );
+}
+
+  Widget _buildLoginForm(BuildContext context, double scale, LoginState state) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildTopTab(isActive: true, title: AppStrings.loginButton, onTap: () {}),
+            _buildTopTab(
+              isActive: false,
+              title: AppStrings.loginRegister,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const RegisterPage()),
+                );
+              },
+            ),
+          ],
+        ),
+        SizedBox(height: 24 * scale),
+        CustomLoginTextField(
+          controller: cpfController,
+          label: AppStrings.loginCpf,
+          textAlign: TextAlign.center,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: AppStrings.loginCpf,
+            labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+
+            alignLabelWithHint: true,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(32),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(32),
+              borderSide: BorderSide(color: Colors.grey),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(32),
+              borderSide: BorderSide(color: Colors.grey),
+            ),
           ),
         ),
-      );
-    } else if (state is LoginFailure) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(state.error)),
-      );
-    }
-  }
-
-  Widget _buildLoginForm(BuildContext context, double scale) {
-    return BlocConsumer<LoginBloc, LoginState>(
-      listener: _loginListener,
-      builder: (context, state) => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildTitle(scale),
-          SizedBox(height: 16 * scale),
-          CustomLoginTextField(
-            controller: cpfController,
-            label: AppStrings.loginCpf,
-            textAlign: TextAlign.center,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: AppStrings.loginCpf,
-              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-              floatingLabelAlignment: FloatingLabelAlignment.center,
-              alignLabelWithHint: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
-                borderSide: BorderSide(color: Colors.grey),
-              ),
+        SizedBox(height: 16 * scale),
+        CustomLoginTextField(
+          controller: passwordController,
+          label: AppStrings.loginPassword,
+          textAlign: TextAlign.center,
+          obscureText: true,
+          decoration: InputDecoration(
+            labelText: AppStrings.loginPassword,
+            labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+            alignLabelWithHint: true,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(32),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(32),
+              borderSide: BorderSide(color: Colors.grey),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(32),
+              borderSide: BorderSide(color: Colors.grey),
             ),
           ),
-          SizedBox(height: 16 * scale),
-          CustomLoginTextField(
-            controller: passwordController,
-            label: AppStrings.loginPassword,
-            textAlign: TextAlign.center,
-            obscureText: true,
-            decoration: InputDecoration(
-              labelText: AppStrings.loginPassword,
-              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-              floatingLabelAlignment: FloatingLabelAlignment.center,
-              alignLabelWithHint: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
-                borderSide: BorderSide(color: Colors.grey),
-              ),
-            ),
-          ),
-          SizedBox(height: 8 * scale),
-          _buildRememberRow(scale),
-          SizedBox(height: 8 * scale),
-          _buildLoginButton(context, state, scale),
-          _buildRegisterButton(context, scale),
-        ],
-      ),
+        ),
+        SizedBox(height: 8 * scale),
+        _buildRememberRow(scale),
+        SizedBox(height: 36 * scale),
+      ],
     );
   }
 
-  Widget _buildTitle(double scale) {
-    return Text(
-      AppStrings.loginTitle,
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        fontSize: 26 * scale,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textWhite,
+  Widget _buildTopTab({required bool isActive, required String title, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        child: Text(
+          title,
+          style: TextStyle(
+            fontSize: 18,
+            color: isActive ? AppColors.primaryGreen : Colors.white70,
+            fontWeight: FontWeight.bold,
+            decoration: isActive ? TextDecoration.underline : TextDecoration.none,
+            decorationColor: AppColors.primaryGreen,
+            decorationThickness: 2,
+          ),
+        ),
       ),
     );
   }
@@ -190,7 +331,14 @@ class _LoginPageState extends State<LoginPage> {
         ),
         const Spacer(),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ForgotPasswordPage(),
+              ),
+            );
+          },
           child: Text(
             AppStrings.loginForgotPassword,
             style: TextStyle(
@@ -200,52 +348,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildLoginButton(BuildContext context, LoginState state, double scale) {
-    return ElevatedButton(
-      onPressed: state is LoginLoading
-          ? null
-          : () {
-              final cpf = cpfController.text.trim();
-              final password = passwordController.text;
-              if (cpf.isEmpty || password.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(AppStrings.loginFieldsRequired)),
-                );
-                return;
-              }
-              context.read<LoginBloc>().add(LoginSubmitted(
-                    cpf: cpf,
-                    password: password,
-                  ));
-            },
-      child: state is LoginLoading
-          ? const CircularProgressIndicator()
-          : Text(AppStrings.loginButton, style: TextStyle(fontSize: 16 * scale)),
-    );
-  }
-
-  Widget _buildRegisterButton(BuildContext context, double scale) {
-    return Padding(
-      padding: EdgeInsets.only(top: 6 * scale),
-      child: Center(
-        child: TextButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const RegisterPage(),
-              ),
-            );
-          },
-          child: Text(
-            AppStrings.loginRegister,
-            style: TextStyle(fontSize: 15 * scale, color: AppColors.primaryYellow),
-          ),
-        ),
-      ),
     );
   }
 

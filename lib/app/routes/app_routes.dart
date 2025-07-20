@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:insurance_company/modules/auth/view/forgot_password/forgot_password_page.dart';
 import 'package:insurance_company/modules/auth/view/register/register_page.dart';
 import 'package:insurance_company/modules/validate_invoice/view/validate_invoice.dart';
 import '../../modules/assets/view/assets_page.dart';
@@ -25,6 +26,7 @@ class AppRoutes {
   static const register = '/register';
   static const String settings = '/settings';
   static const String validateInvoice = '/validate-invoice';
+  static const forgotPassword = '/forgot-password';
 
   static final routes = <String, WidgetBuilder>{  
     assets: (_) => const AssetsPage(),
@@ -32,6 +34,7 @@ class AppRoutes {
     contracts: (_) => const ContractsPage(),
     coverage: (_) => const CoveragePage(),
     family: (_) => const FamilyPage(),
+    forgotPassword: (_) => const ForgotPasswordPage(),
     home: (_) => const HomePage(),
     login: (_) => const LoginPage(),
     importantPhones: (_) => const ImportantPhonesPage(),
