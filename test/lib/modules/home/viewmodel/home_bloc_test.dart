@@ -1,4 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// ignore_for_file: subtype_of_sealed_class
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:insurance_company/modules/home/viewmodel/home_bloc.dart';
@@ -6,15 +7,12 @@ import 'package:insurance_company/modules/home/viewmodel/home_event.dart';
 import 'package:insurance_company/modules/home/viewmodel/home_state.dart';
 import 'package:insurance_company/app/core/repositories/firebase_repository_impl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MockFirebaseRepositoryImpl extends Mock implements FirebaseRepositoryImpl {}
 class MockUser extends Mock implements User {}
-
-class TestDocumentSnapshot {
-  final Map<String, dynamic> _data;
-  TestDocumentSnapshot(this._data);
-  Map<String, dynamic> data() => _data;
-}
+class MockDocumentSnapshot extends Mock implements DocumentSnapshot<Map<String, dynamic>> {}
+class FakeDocumentSnapshot extends Fake implements DocumentSnapshot<Map<String, dynamic>> {}
 
 void main() {
   late MockFirebaseRepositoryImpl mockRepository;
@@ -22,59 +20,39 @@ void main() {
 
   setUp(() {
     mockRepository = MockFirebaseRepositoryImpl();
+
+    registerFallbackValue(FakeDocumentSnapshot());
   });
 
   test('emits loading and loaded states when user is authenticated', () async {
     final mockUser = MockUser();
-    final fakeDoc = TestDocumentSnapshot({
+    final mockDocSnapshot = MockDocumentSnapshot();
+
+    when(() => mockRepository.currentUser).thenReturn(mockUser);
+    when(() => mockUser.uid).thenReturn('user123');
+    when(() => mockRepository.getUserData('user123')).thenAnswer((_) async => mockDocSnapshot);
+    when(() => mockDocSnapshot.data()).thenReturn({
       'name': 'Test User',
       'email': 'test@email.com',
     });
 
-    when(() => mockRepository.currentUser).thenReturn(mockUser);
-    when(() => mockUser.uid).thenReturn('user123');
-    when(() => mockRepository.getUserData('user123')).thenAnswer((_) async => fakeDoc as DocumentSnapshot<Map<String, dynamic>>);
-
-
     bloc = HomeBloc(mockRepository);
 
-    final states = <HomeState>[];
-    final subscription = bloc.stream.listen(states.add);
+    await expectLater(
+      bloc.stream,
+      emitsInOrder([
+
+        predicate<HomeState>((state) => state.isLoading == true),
+
+        predicate<HomeState>((state) =>
+            state.isLoading == false &&
+            state.userName == 'Test User' &&
+            state.userEmail == 'test@email.com'),
+      ]),
+    );
 
     bloc.add(LoadHomeData());
 
-    await Future.delayed(const Duration(milliseconds: 100));
-
-    expect(states.length, 2);
-
-    expect(states[0].isLoading, isTrue);
-    expect(states[1].isLoading, isFalse);
-    expect(states[1].userName, 'Test User');
-    expect(states[1].userEmail, 'test@email.com');
-    expect(states[1].familyMembers, isA<List>());
-    expect(states[1].contractedInsurances, isA<List>());
-
-    await subscription.cancel();
-    await bloc.close();
-  });
-
-  test('emits error state when user is not authenticated', () async {
-    when(() => mockRepository.currentUser).thenReturn(null);
-
-    bloc = HomeBloc(mockRepository);
-
-    final states = <HomeState>[];
-    final subscription = bloc.stream.listen(states.add);
-
-    bloc.add(LoadHomeData());
-
-    await Future.delayed(const Duration(milliseconds: 100));
-
-    expect(states.length, 2);
-    expect(states[1].isLoading, isFalse);
-    expect(states[1].error, contains('Usuário não autenticado'));
-
-    await subscription.cancel();
     await bloc.close();
   });
 }

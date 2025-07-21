@@ -20,8 +20,10 @@ void main() {
   setUp(() {
     mockLoginBloc = MockLoginBloc();
     mockObserver = MockNavigatorObserver();
-    
+
     when(() => mockLoginBloc.state).thenReturn(LoginInitial());
+    when(() => mockLoginBloc.stream)
+        .thenAnswer((_) => Stream<LoginState>.value(LoginInitial()));
   });
 
   Widget createWidgetUnderTest() {
@@ -37,6 +39,11 @@ void main() {
 
   group('LoginPage', () {
     testWidgets('should render initial widgets correctly', (tester) async {
+
+      when(() => mockLoginBloc.state).thenReturn(LoginInitial());
+      when(() => mockLoginBloc.stream)
+          .thenAnswer((_) => Stream<LoginState>.value(LoginInitial()));
+
       await tester.pumpWidget(createWidgetUnderTest());
 
       expect(find.text(AppStrings.appTitle), findsOneWidget);
@@ -46,7 +53,10 @@ void main() {
     });
 
     testWidgets('should show loading when state is LoginLoading', (tester) async {
+
       when(() => mockLoginBloc.state).thenReturn(LoginLoading());
+      when(() => mockLoginBloc.stream)
+          .thenAnswer((_) => Stream<LoginState>.value(LoginLoading()));
 
       await tester.pumpWidget(createWidgetUnderTest());
 
@@ -58,8 +68,10 @@ void main() {
         LoginInitial(),
         LoginFailure('Erro de login', error: ''),
       ]);
-      
       whenListen(mockLoginBloc, states, initialState: LoginInitial());
+
+      when(() => mockLoginBloc.state)
+          .thenReturn(LoginFailure('Erro de login', error: ''));
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pump();
@@ -68,6 +80,11 @@ void main() {
     });
 
     testWidgets('should call LoginSubmitted with correct data when FAB is pressed', (tester) async {
+
+      when(() => mockLoginBloc.state).thenReturn(LoginInitial());
+      when(() => mockLoginBloc.stream)
+          .thenAnswer((_) => Stream<LoginState>.value(LoginInitial()));
+
       const testCpf = '12345678901';
       const testPassword = 'senha123';
 
@@ -84,6 +101,11 @@ void main() {
     });
 
     testWidgets('should show validation message when fields are empty', (tester) async {
+
+      when(() => mockLoginBloc.state).thenReturn(LoginInitial());
+      when(() => mockLoginBloc.stream)
+          .thenAnswer((_) => Stream<LoginState>.value(LoginInitial()));
+
       await tester.pumpWidget(createWidgetUnderTest());
 
       await tester.tap(find.byKey(const Key('login_fab')));
@@ -94,6 +116,11 @@ void main() {
     });
 
     testWidgets('should navigate to RegisterPage when register tab is tapped', (tester) async {
+
+      when(() => mockLoginBloc.state).thenReturn(LoginInitial());
+      when(() => mockLoginBloc.stream)
+          .thenAnswer((_) => Stream<LoginState>.value(LoginInitial()));
+
       await tester.pumpWidget(createWidgetUnderTest());
 
       await tester.tap(find.text(AppStrings.loginRegister));

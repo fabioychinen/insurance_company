@@ -11,11 +11,15 @@ import 'package:insurance_company/modules/auth/viewmodel/register/register_state
 
 class MockRegisterBloc extends Mock implements RegisterBloc {}
 
+class MockNavigatorObserver extends Mock implements NavigatorObserver {}
+
 void main() {
   late MockRegisterBloc mockRegisterBloc;
 
   setUp(() {
     mockRegisterBloc = MockRegisterBloc();
+    when(() => mockRegisterBloc.stream)
+        .thenAnswer((_) => const Stream<RegisterState>.empty());
   });
 
   Widget createWidgetUnderTest() {
@@ -30,6 +34,8 @@ void main() {
   group('RegisterPage', () {
     testWidgets('renders all form fields correctly', (tester) async {
       when(() => mockRegisterBloc.state).thenReturn(RegisterInitial());
+      when(() => mockRegisterBloc.stream)
+          .thenAnswer((_) => Stream<RegisterState>.value(RegisterInitial()));
 
       await tester.pumpWidget(createWidgetUnderTest());
 
@@ -44,19 +50,21 @@ void main() {
 
     testWidgets('shows loading indicator when state is RegisterLoading', (tester) async {
       when(() => mockRegisterBloc.state).thenReturn(RegisterLoading());
+      when(() => mockRegisterBloc.stream)
+          .thenAnswer((_) => Stream<RegisterState>.value(RegisterLoading()));
 
       await tester.pumpWidget(createWidgetUnderTest());
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.text('Register'), findsNothing);
     });
-
     testWidgets('shows error snackbar when state is RegisterFailure', (tester) async {
       whenListen(
         mockRegisterBloc,
         Stream.fromIterable([RegisterInitial(), RegisterFailure('Error message')]),
         initialState: RegisterInitial(),
       );
+      when(() => mockRegisterBloc.state).thenReturn(RegisterFailure('Error message'));
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pump();
@@ -70,6 +78,7 @@ void main() {
         Stream.fromIterable([RegisterInitial(), RegisterSuccess()]),
         initialState: RegisterInitial(),
       );
+      when(() => mockRegisterBloc.state).thenReturn(RegisterSuccess());
 
       final mockObserver = MockNavigatorObserver();
       await tester.pumpWidget(
@@ -92,7 +101,7 @@ void main() {
 
       await tester.pumpWidget(createWidgetUnderTest());
 
-      await tester.enterText(find.byType(CustomTextField).at(0), 'João das Neves');
+      await tester.enterText(find.byType(CustomTextField).at(0), 'John Doe');
       await tester.enterText(find.byType(CustomTextField).at(1), '12345678901');
       await tester.enterText(find.byType(CustomTextField).at(2), 'test@example.com');
       await tester.enterText(find.byType(CustomTextField).at(3), 'password123');
@@ -102,7 +111,7 @@ void main() {
       await tester.pump();
 
       verify(() => mockRegisterBloc.add(RegisterSubmitted(
-        name: 'João das Neves',
+        name: 'John Doe',
         cpf: '12345678901',
         email: 'test@example.com',
         password: 'password123',
@@ -125,5 +134,3 @@ void main() {
     });
   });
 }
-
-class MockNavigatorObserver extends Mock implements NavigatorObserver {}
