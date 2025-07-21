@@ -49,6 +49,7 @@ class AppStrings {
   static const email = 'E-mail';
 
   static const saveErrorMessage = 'Ocorreu um erro ao salvar suas preferências';
+  static const loadingErrorMessage = 'Erro ao carregar dados salvos';
 
   static const drawerUserName = 'Usuário Exemplo';
   static const drawerUserEmail = 'exemplo@email.com';

@@ -2,9 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_repository.dart';
 
-class FirebaseRepositoryImpl implements IFirebaseRepository {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+class FirebaseRepositoryImpl implements FirebaseRepository {
+  final FirebaseAuth _auth;
+  final FirebaseFirestore _firestore;
+    
+  FirebaseRepositoryImpl({
+    FirebaseAuth? firebaseAuth,
+    FirebaseFirestore? firestore,
+  })  : _auth = firebaseAuth ?? FirebaseAuth.instance,
+        _firestore = firestore ?? FirebaseFirestore.instance;
 
   @override
   Future<UserCredential> loginWithEmail({
@@ -31,7 +37,7 @@ class FirebaseRepositoryImpl implements IFirebaseRepository {
     
     final uid = userCredential.user!.uid;
 
-    await _firestore.collection('users').doc(userCredential.user!.uid).set({
+    await _firestore.collection('users').doc(uid).set({
       'uid': uid,
       'name': name,
       'cpf': cpf,
@@ -41,10 +47,12 @@ class FirebaseRepositoryImpl implements IFirebaseRepository {
     return userCredential;
   }
 
+  @override
   Future<void> sendPasswordResetEmail(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
   }
 
+  @override
   Future<String?> getEmailByCpf(String cpf) async {
     final result = await _firestore
         .collection('users')

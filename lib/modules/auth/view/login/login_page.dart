@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:insurance_company/shared/themes/app_theme.dart';
+import '../../../../app/core/constants/app_images.dart';
 import '../../../../app/core/constants/app_strings.dart';
 import '../../../../app/core/services/firebase_repository_impl.dart';
 import '../../../../shared/widgets/custom_login_text_field.dart';
@@ -57,10 +58,9 @@ class _LoginPageState extends State<LoginPage> {
         }
       }
     } catch (e) {
-      debugPrint('Erro ao carregar preferências: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao carregar dados salvos: $e')),
+          SnackBar(content: Text('${AppStrings.loadingErrorMessage}:$e')),
         );
       }
     }
@@ -69,28 +69,26 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GradientBackground(
-        header: Column(
-          children: [
-            Text(
-              AppStrings.appTitle,
-              style: const TextStyle(
-                fontSize: 22,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+      appBar: AppBar(
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.primaryGreen, AppColors.primaryYellow],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            const SizedBox(height: 12),
-            Text(
-              AppStrings.welcome,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
-              ),
-            ),
-          ],
+          ),
         ),
+        title: Image.asset(
+          AppImages.logo,
+          height: 64,
+          fit: BoxFit.contain,
+        ),
+      ),
+      body: GradientBackground(
         footer: _buildSocialIcons(1.0),
         child: BlocConsumer<LoginBloc, LoginState>(
           listener: (context, state) => _loginListener(state),
@@ -186,7 +184,7 @@ Widget _buildLoginFabButton(BuildContext context, LoginState state, double scale
               if (cpf.isEmpty || password.isEmpty) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Preencha todos os campos')),
+                  const SnackBar(content: Text(AppStrings.loginFieldsRequired)),
                 );
                 return;
               }

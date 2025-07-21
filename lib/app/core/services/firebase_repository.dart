@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-abstract class IFirebaseRepository {
+abstract class FirebaseRepository {
   Future<UserCredential> loginWithEmail({
     required String email,
     required String password,
@@ -25,4 +25,8 @@ abstract class IFirebaseRepository {
   Future<void> addFamilyMember(String uid, Map<String, dynamic> member);
 
   Future<QuerySnapshot<Map<String, dynamic>>> getFamilyMembers(String uid);
+
+  Future<void> sendPasswordResetEmail(String email);
+
+  Future<String?> getEmailByCpf(String cpf);
 }

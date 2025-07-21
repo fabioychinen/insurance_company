@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:insurance_company/modules/auth/view/forgot_password/forgot_password_page.dart';
-import 'package:insurance_company/modules/auth/view/register/register_page.dart';
-import 'package:insurance_company/modules/validate_invoice/view/validate_invoice.dart';
 import '../../modules/assets/view/assets_page.dart';
 import '../../modules/auth/view/login/login_page.dart';
+import '../../modules/auth/view/register/register_page.dart';
 import '../../modules/claims/view/claims_page.dart';
 import '../../modules/contracts/view/contracts_page.dart';
 import '../../modules/coverage/view/coverage_page.dart';
@@ -11,7 +10,9 @@ import '../../modules/family/view/family_page.dart';
 import '../../modules/home/view/home_page.dart';
 import '../../modules/important_phones/view/important_phones.dart';
 import '../../modules/payments/view/payments_page.dart';
+import '../../modules/post/view/post_page.dart';
 import '../../modules/settings/view/settings_page.dart';
+import '../../modules/validate_invoice/view/validate_invoice.dart';
 
 class AppRoutes { 
   static const String assets = '/assets';
@@ -27,6 +28,7 @@ class AppRoutes {
   static const String settings = '/settings';
   static const String validateInvoice = '/validate-invoice';
   static const forgotPassword = '/forgot-password';
+  static const postPageDio = '/post-page-dio';
 
   static final routes = <String, WidgetBuilder>{  
     assets: (_) => const AssetsPage(),
@@ -39,6 +41,7 @@ class AppRoutes {
     login: (_) => const LoginPage(),
     importantPhones: (_) => const ImportantPhonesPage(),
     payments: (_) => const PaymentsPage(),
+    postPageDio: (_) => const PostsPageDio(),
     register: (_) => const RegisterPage(),    
     settings: (_) => const SettingsPage(),
     validateInvoice: (_) => const ValidateInvoicePage(),
