@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insurance_company/shared/themes/app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../app/core/constants/app_strings.dart';
 import '../../app/core/constants/app_images.dart';
 import '../../app/core/services/firebase_repository_impl.dart';
@@ -145,12 +146,18 @@ class CustomDrawer extends StatelessWidget {
       ),
       onTap: () async {
         await FirebaseRepositoryImpl().logout();
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('savedCpf');
+        await prefs.remove('savedPassword');
+
         if (!context.mounted) return;
         Navigator.of(context).popUntil((route) => route.isFirst);
         Navigator.of(context).pushReplacementNamed(AppRoutes.login);
       },
     );
   }
+
 
   Widget _buildFooter() {
     return Container(

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../app/core/bloc/post_bloc.dart';
 import '../../../app/core/constants/app_images.dart';
-import '../../../app/core/models/post_model.dart';
 import '../../../shared/themes/app_theme.dart';
 import '../../../shared/widgets/custom_drawer.dart';
 import '../../../app/core/constants/app_strings.dart';
 import '../../family/view/family_page.dart';
+import '../model/card_model.dart';
+import '../model/custom_responsive_card.dart';
 import '../viewmodel/home_bloc.dart';
 import '../viewmodel/home_state.dart';
 
@@ -101,8 +101,8 @@ class HomePage extends StatelessWidget {
               const Text(
                 AppStrings.welcome,
                 style: TextStyle(
-                  color: Colors.white, 
-                  fontWeight: FontWeight.w500, 
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
                   fontSize: 15,
                   letterSpacing: 0.2,
                 ),
@@ -146,71 +146,38 @@ class HomePage extends StatelessWidget {
       InsuranceCard(title: AppStrings.company, icon: Icons.business),
     ];
 
-    final double width = MediaQuery.of(context).size.width;
+    final isWide = MediaQuery.of(context).size.width > 900;
 
-    if (width > 1000) {
+    if (isWide) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1050),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: cards.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 6,
-                mainAxisExtent: 110,
-                crossAxisSpacing: 24,
-                mainAxisSpacing: 10,
-              ),
-              itemBuilder: (context, index) => cards[index],
-            ),
-          ),
-        ),
-      );
-    } else if (width > 700) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: cards.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                mainAxisExtent: 110,
-                crossAxisSpacing: 18,
-                mainAxisSpacing: 10,
-              ),
-              itemBuilder: (context, index) => cards[index],
-            ),
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: cards
+              .map((card) => Padding(
+                    padding: const EdgeInsets.only(right: 24),
+                    child: SizedBox(width: 140, height: 90, child: card),
+                  ))
+              .toList(),
         ),
       );
     }
 
     return SizedBox(
-      height: 120,
+      height: 110,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: cards.length,
         padding: const EdgeInsets.symmetric(horizontal: 10),
         separatorBuilder: (_, __) => const SizedBox(width: 14),
-        itemBuilder: (context, index) => SizedBox(width: 110, child: cards[index]),
+        itemBuilder: (context, index) =>
+            SizedBox(width: 110, child: cards[index]),
       ),
     );
   }
 
   Widget _buildFamilySection(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.cardDark,
-        borderRadius: BorderRadius.circular(18),
-      ),
+    return CustomResponsiveCard(
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
         onTap: () {
@@ -228,7 +195,7 @@ class HomePage extends StatelessWidget {
               Icon(Icons.add_circle_outline, color: Colors.white, size: 38),
               SizedBox(height: 6),
               Text(
-                AppStrings.addFamilyHere,
+                'Adicione aqui membros da sua família\ne compartilhe os seguros com eles.',
                 style: TextStyle(color: Colors.white60, fontSize: 14),
                 textAlign: TextAlign.center,
               ),
@@ -243,21 +210,17 @@ class HomePage extends StatelessWidget {
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
         final contracts = state.contractedInsurances;
-        return Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: AppColors.cardDark,
-            borderRadius: BorderRadius.circular(18),
-          ),
+        return CustomResponsiveCard(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 32),
             child: contracts.isEmpty
                 ? Column(
                     children: const [
-                      Icon(Icons.sentiment_dissatisfied, color: Colors.white, size: 34),
+                      Icon(Icons.sentiment_dissatisfied,
+                          color: Colors.white, size: 34),
                       SizedBox(height: 8),
                       Text(
-                        AppStrings.youDontHaveInsurance,
+                        'Você ainda não possui seguros contratados.',
                         style: TextStyle(color: Colors.white54, fontSize: 15),
                         textAlign: TextAlign.center,
                       ),
@@ -280,113 +243,6 @@ class HomePage extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class InsuranceCard extends StatelessWidget {
-  final String title;
-  final IconData icon;
-
-  const InsuranceCard({
-    super.key,
-    required this.title,
-    required this.icon,
-  });
-
-  Future<void> _handleTap(BuildContext context) async {
-    if (title == AppStrings.car) {
-      final postBloc = context.read<PostBloc>();
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Carregando dados...')),
-      );
-
-      try {
-        await postBloc.fetchPosts();
-        
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => WebViewPage(
-              url: 'https://jsonplaceholder.typicode.com/posts',
-              posts: postBloc.state is PostLoaded 
-                  ? (postBloc.state as PostLoaded).posts
-                  : [],
-            ),
-          ),
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro: $e')),
-        );
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => _handleTap(context),
-      child: Container(
-        width: 100,
-        decoration: BoxDecoration(
-          color: AppColors.cardDark,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.grey[700]!, width: 1.2),
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: AppColors.primaryGreen, size: 40),
-            const SizedBox(height: 10),
-            Text(
-              title,
-              style: const TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class WebViewPage extends StatelessWidget {
-  final String url;
-  final List<Post> posts;
-
-  const WebViewPage({
-    super.key,
-    required this.url,
-    this.posts = const [],
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.webViewTitle)),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: posts.length,
-              itemBuilder: (context, index) {
-                final post = posts[index];
-                return ListTile(
-                  title: Text(post.title),
-                  subtitle: Text(post.body),
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text('URL: $url'),
-          ),
-        ],
-      ),
     );
   }
 }

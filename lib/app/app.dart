@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:insurance_company/app/core/services/api_services.dart';
+import 'package:insurance_company/env.dart';
 import '../modules/auth/viewmodel/login/login_bloc.dart';
 import '../modules/auth/viewmodel/register/register_bloc.dart';
 import 'core/constants/app_strings.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<PostBloc>(
           create: (_) => PostBloc(
             PostRepository(
-              ApiServices()
+              ApiServices(baseUrl: Environments.prod)
             )
           ),
         ),

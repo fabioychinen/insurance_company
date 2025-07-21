@@ -28,7 +28,7 @@ class AppRoutes {
   static const String settings = '/settings';
   static const String validateInvoice = '/validate-invoice';
   static const forgotPassword = '/forgot-password';
-  static const postPageDio = '/post-page-dio';
+  static const postPage = '/post-page';
 
   static final routes = <String, WidgetBuilder>{  
     assets: (_) => const AssetsPage(),
@@ -41,7 +41,7 @@ class AppRoutes {
     login: (_) => const LoginPage(),
     importantPhones: (_) => const ImportantPhonesPage(),
     payments: (_) => const PaymentsPage(),
-    postPageDio: (_) => const PostsPageDio(),
+    postPage: (_) => const PostsPage(),
     register: (_) => const RegisterPage(),    
     settings: (_) => const SettingsPage(),
     validateInvoice: (_) => const ValidateInvoicePage(),

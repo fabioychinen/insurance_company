@@ -1,35 +1,74 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../models/post_model.dart';
+import 'package:insurance_company/app/core/models/post_model.dart';
+
 import '../repositories/post_repository.dart';
 
-class PostBloc extends Cubit<PostState> {
-  final PostRepository repository;
 
-  PostBloc(this.repository) : super(PostInitial());
 
-  Future<void> fetchPosts() async {
-    emit(PostLoading());
-    try {
-      final posts = await repository.fetchPosts();
-      emit(PostLoaded(posts));
-    } catch (e) {
-      emit(PostError(e.toString()));
-    }
-  }
+abstract class PostEvent {}
+
+class LoadPostsEvent extends PostEvent {}
+
+class CreatePostEvent extends PostEvent {
+  final Post post;
+  CreatePostEvent(this.post);
 }
+
 
 abstract class PostState {}
 
-class PostInitial extends PostState {}
+class PostInitialState extends PostState {}
 
-class PostLoading extends PostState {}
+class PostLoadingState extends PostState {}
 
-class PostLoaded extends PostState {
+class PostLoadedState extends PostState {
   final List<Post> posts;
-  PostLoaded(this.posts);
+  PostLoadedState(this.posts);
 }
 
-class PostError extends PostState {
-  final String message;
-  PostError(this.message);
+class PostCreatedState extends PostState {
+  final Post post;
+  PostCreatedState(this.post);
+}
+
+class PostErrorState extends PostState {
+  final String error;
+  PostErrorState(this.error);
+}
+
+class PostBloc extends Bloc<PostEvent, PostState> {
+  final PostRepository _repository;
+
+  PostBloc(this._repository) : super(PostInitialState()) {
+    on<LoadPostsEvent>(_onLoadPosts);
+    on<CreatePostEvent>(_onCreatePost);
+  }
+
+  FutureOr<void> _onLoadPosts(
+    LoadPostsEvent event,
+    Emitter<PostState> emit,
+  ) async {
+    emit(PostLoadingState());
+    try {
+      final posts = await _repository.fetchPosts();
+      emit(PostLoadedState(posts));
+    } catch (e) {
+      emit(PostErrorState(e.toString()));
+    }
+  }
+
+  FutureOr<void> _onCreatePost(
+    CreatePostEvent event,
+    Emitter<PostState> emit,
+  ) async {
+    emit(PostLoadingState());
+    try {
+      final createdPost = await _repository.createPost(event.post);
+      emit(PostCreatedState(createdPost));
+      add(LoadPostsEvent());
+    } catch (e) {
+      emit(PostErrorState(e.toString()));
+    }
+  }
 }

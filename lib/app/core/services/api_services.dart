@@ -1,13 +1,20 @@
 import 'package:dio/dio.dart';
 
 class ApiServices {
-  final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'https://jsonplaceholder.typicode.com',
-    connectTimeout: const Duration(seconds: 5),
-    receiveTimeout: const Duration(seconds: 3),
-  ));
+  final Dio _dio;
 
-  ApiServices() {
+  ApiServices({required String baseUrl})
+      : _dio = Dio(
+          BaseOptions(
+            baseUrl: baseUrl,
+            connectTimeout: const Duration(seconds: 5),
+            receiveTimeout: const Duration(seconds: 3),
+          ),
+        ) {
+    _configureInterceptors();
+  }
+
+  void _configureInterceptors() {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
         options.headers['Accept'] = 'application/json';

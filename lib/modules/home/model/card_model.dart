@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
 import '../../../app/core/constants/app_strings.dart';
 import '../../../shared/themes/app_theme.dart';
-import '../view/home_page.dart';
+import 'insurance_webview.dart';
 
 class InsuranceCard extends StatelessWidget {
   final String title;
@@ -19,8 +18,9 @@ class InsuranceCard extends StatelessWidget {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => const WebViewPage(
-            url: 'https://jsonplaceholder.typicode.com/',
+          builder: (_) => WebViewPage(
+            url: 'https://www.portoseguro.com.br/seguro-auto',
+            title: 'Seguro Automóvel',
           ),
         ),
       );
@@ -38,40 +38,45 @@ class InsuranceCard extends StatelessWidget {
           minHeight: 90,
         ),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.primaryGreen, AppColors.primaryYellow],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: AppColors.cardDark,
           borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: Colors.grey[700]!, width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Color.fromRGBO(0, 0, 0, 0.2),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
+              color: AppColors.cardDark.withValues(alpha: 1),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, 
-              color: Colors.white,
-              size: 32),
-            const SizedBox(height: 8),
+             ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [AppColors.primaryGreen, AppColors.primaryYellow],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(Rect.fromLTWH(0, 0, 40, 40)),
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: 36,
+              ),
+            ),
+            const SizedBox(height: 10),
             Flexible(
               child: Text(
                 title,
                 style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
+                  color: Colors.white70,
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
                   shadows: [
                     Shadow(
                       blurRadius: 2,
-                      color: Colors.black45,
+                      color: Colors.black26,
                       offset: Offset(1, 1),
                     ),
                   ],
