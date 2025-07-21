@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../app/core/constants/app_strings.dart';
-import '../../../../app/core/services/firebase_repository_impl.dart';
+import '../../../../app/core/repositories/firebase_repository_impl.dart';
 import '../../../../shared/themes/app_theme.dart';
 import '../../viewmodel/forgot_password/forgot_password_bloc.dart';
 import '../../viewmodel/forgot_password/forgot_password_event.dart';

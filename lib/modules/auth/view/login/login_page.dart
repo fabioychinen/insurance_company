@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:insurance_company/shared/themes/app_theme.dart';
 import '../../../../app/core/constants/app_images.dart';
 import '../../../../app/core/constants/app_strings.dart';
-import '../../../../app/core/services/firebase_repository_impl.dart';
+import '../../../../app/core/repositories/firebase_repository_impl.dart';
 import '../../../../shared/widgets/custom_login_text_field.dart';
 import '../../../../shared/widgets/gradient_background.dart';
 import '../../../home/view/home_page.dart';

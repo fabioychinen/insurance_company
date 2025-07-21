@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'home_event.dart';
 import 'home_state.dart';
-import '../../../app/core/services/firebase_repository_impl.dart';
+import '../../../app/core/repositories/firebase_repository_impl.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final FirebaseRepositoryImpl repository;

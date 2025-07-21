@@ -195,7 +195,7 @@ class HomePage extends StatelessWidget {
               Icon(Icons.add_circle_outline, color: Colors.white, size: 38),
               SizedBox(height: 6),
               Text(
-                'Adicione aqui membros da sua família\ne compartilhe os seguros com eles.',
+                AppStrings.addFamilyHere,
                 style: TextStyle(color: Colors.white60, fontSize: 14),
                 textAlign: TextAlign.center,
               ),
@@ -220,7 +220,7 @@ class HomePage extends StatelessWidget {
                           color: Colors.white, size: 34),
                       SizedBox(height: 8),
                       Text(
-                        'Você ainda não possui seguros contratados.',
+                        AppStrings.youDontHaveInsurance,
                         style: TextStyle(color: Colors.white54, fontSize: 15),
                         textAlign: TextAlign.center,
                       ),

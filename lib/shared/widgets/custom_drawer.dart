@@ -4,7 +4,7 @@ import 'package:insurance_company/shared/themes/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../app/core/constants/app_strings.dart';
 import '../../app/core/constants/app_images.dart';
-import '../../app/core/services/firebase_repository_impl.dart';
+import '../../app/core/repositories/firebase_repository_impl.dart';
 import '../../app/routes/app_routes.dart';
 import '../../modules/home/viewmodel/home_bloc.dart';
 import '../../modules/home/viewmodel/home_state.dart';

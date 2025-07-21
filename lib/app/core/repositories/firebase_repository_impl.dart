@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'firebase_repository.dart';
 
 class FirebaseRepositoryImpl implements FirebaseRepository {
@@ -97,5 +98,11 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
     final uid = _auth.currentUser?.uid;
     if (uid == null) throw Exception('Usuário não logado');
     return await _firestore.collection('users').doc(uid).get();
+  }
+  
+  @visibleForTesting
+  Future<Map<String, dynamic>> getUserDataMap(String uid) async {
+    final snapshot = await getUserData(uid);
+    return snapshot.data() ?? {};
   }
 }

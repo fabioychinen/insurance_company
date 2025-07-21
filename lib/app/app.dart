@@ -5,7 +5,7 @@ import 'package:insurance_company/env.dart';
 import '../modules/auth/viewmodel/login/login_bloc.dart';
 import '../modules/auth/viewmodel/register/register_bloc.dart';
 import 'core/constants/app_strings.dart';
-import 'core/services/firebase_repository_impl.dart';
+import 'core/repositories/firebase_repository_impl.dart';
 import 'routes/app_routes.dart';
 import 'package:insurance_company/shared/themes/app_theme.dart';
 import 'package:insurance_company/app/core/bloc/post_bloc.dart';

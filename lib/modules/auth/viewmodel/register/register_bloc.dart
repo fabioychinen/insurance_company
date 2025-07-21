@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:insurance_company/app/core/services/firebase_repository_impl.dart';
+import 'package:insurance_company/app/core/repositories/firebase_repository_impl.dart';
 import 'register_event.dart';
 import 'register_state.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../app/core/services/firebase_repository_impl.dart';
+import '../../../../app/core/repositories/firebase_repository_impl.dart';
 import 'forgot_password_event.dart';
 import 'forgot_password_state.dart';
 
