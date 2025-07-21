@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../app/core/constants/app_strings.dart';
+import '../../../env.dart';
 import '../../../shared/themes/app_theme.dart';
 import 'insurance_webview.dart';
 
@@ -13,19 +16,25 @@ class InsuranceCard extends StatelessWidget {
     required this.icon,
   });
 
-  void _handleTap(BuildContext context) {
+  void _handleTap(BuildContext context) async {
     if (title == AppStrings.car) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => WebViewPage(
-            url: 'https://www.portoseguro.com.br/seguro-auto',
-            title: 'Seguro Automóvel',
+      if (kIsWeb) {
+        final uri = Uri.parse(Environments.prod);
+        await launchUrl(uri, webOnlyWindowName: '_blank');
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => WebViewPage(
+              url: Environments.prod,
+              title: 'Seguro Automóvel',
+            ),
           ),
-        ),
-      );
+        );
+      }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
