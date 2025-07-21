@@ -15,6 +15,10 @@ class AppStrings {
   static const noInsurance = 'Você ainda não contratou nenhum seguro.';
   static const webViewTitle = 'WebView';
   static const openWebView = 'Abriria aqui: ';
+  static const heritage = 'Patrimônio';
+  static const company = 'Empresa';
+  static const addFamilyHere = 'Adicione aqui membros da sua família\ne compartilhe os seguros com eles.';
+  static const youDontHaveInsurance = 'Você ainda não possui seguros contratados.';
 
   static const registerTitle = 'Cadastro';
   static const registerName = 'Nome';
@@ -64,4 +68,5 @@ class AppStrings {
   static const drawerImportantPhones = 'Telefones Importantes';
   static const drawerSettings = 'Configurações';
   static const drawerLogout = 'Sair';
+  
 }

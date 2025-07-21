@@ -142,8 +142,8 @@ class HomePage extends StatelessWidget {
       InsuranceCard(title: AppStrings.residence, icon: Icons.home),
       InsuranceCard(title: AppStrings.life, icon: Icons.favorite),
       InsuranceCard(title: AppStrings.accidents, icon: Icons.health_and_safety),
-      InsuranceCard(title: 'Patrimônio', icon: Icons.apartment),
-      InsuranceCard(title: 'Empresa', icon: Icons.business),
+      InsuranceCard(title: AppStrings.heritage, icon: Icons.apartment),
+      InsuranceCard(title: AppStrings.company, icon: Icons.business),
     ];
 
     final double width = MediaQuery.of(context).size.width;
@@ -228,7 +228,7 @@ class HomePage extends StatelessWidget {
               Icon(Icons.add_circle_outline, color: Colors.white, size: 38),
               SizedBox(height: 6),
               Text(
-                'Adicione aqui membros da sua família\ne compartilhe os seguros com eles.',
+                AppStrings.addFamilyHere,
                 style: TextStyle(color: Colors.white60, fontSize: 14),
                 textAlign: TextAlign.center,
               ),
@@ -257,7 +257,7 @@ class HomePage extends StatelessWidget {
                       Icon(Icons.sentiment_dissatisfied, color: Colors.white, size: 34),
                       SizedBox(height: 8),
                       Text(
-                        'Você ainda não possui seguros contratados.',
+                        AppStrings.youDontHaveInsurance,
                         style: TextStyle(color: Colors.white54, fontSize: 15),
                         textAlign: TextAlign.center,
                       ),
